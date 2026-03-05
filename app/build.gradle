@@ -36,7 +36,7 @@ android {
                 }
             }
 
-            applicationId "com.limelight.root"
+            applicationId "com.mncompute.artemis.voice.root"
             dimension "root"
             buildConfigField "boolean", "ROOT_BUILD", "true"
         }
@@ -48,7 +48,7 @@ android {
                 }
             }
 
-            applicationId "com.limelight"
+            applicationId "com.mncompute.artemis.voice"
             dimension "root"
             buildConfigField "boolean", "ROOT_BUILD", "false"
         }
@@ -82,8 +82,8 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
-            resValue "string", "app_label", "Moonlight (Debug)"
-            resValue "string", "app_label_root", "Moonlight (Root Debug)"
+            resValue "string", "app_label", "Artemis Voice (Debug)"
+            resValue "string", "app_label_root", "Artemis Voice (Root Debug)"
 
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -120,8 +120,8 @@ android {
             //
             // TL;DR: Leave the following line alone!
             applicationIdSuffix ".unofficial"
-            resValue "string", "app_label", "Moonlight"
-            resValue "string", "app_label_root", "Moonlight (Root)"
+            resValue "string", "app_label", "Artemis Voice"
+            resValue "string", "app_label_root", "Artemis Voice (Root)"
 
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

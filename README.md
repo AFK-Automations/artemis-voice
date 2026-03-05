@@ -1,35 +1,60 @@
-# Moonlight Android
+# Artemis Voice
 
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/232a8tadrrn8jv0k/branch/master?svg=true)](https://ci.appveyor.com/project/cgutman/moonlight-android/branch/master)
-[![Translation Status](https://hosted.weblate.org/widgets/moonlight/-/moonlight-android/svg-badge.svg)](https://hosted.weblate.org/projects/moonlight/moonlight-android/)
+**Voice dictation fix for [Artemis Android](https://github.com/ClassicOldSong/moonlight-android)** — a feature-rich fork of [Moonlight](https://github.com/moonlight-stream/moonlight-android).
 
-[Moonlight for Android](https://moonlight-stream.org) is an open source client for NVIDIA GameStream and [Sunshine](https://github.com/LizardByte/Sunshine).
+## What This Fixes
 
-Moonlight for Android will allow you to stream your full collection of games from your Windows PC to your Android device,
-whether in your own home or over the internet.
+Stock Moonlight/Artemis drops all text from Android IME `commitText()` calls. This means **voice dictation, swipe typing, and autocomplete** through Gboard (or any soft keyboard) silently fail — the text never reaches the Windows host.
 
-Moonlight also has a [PC client](https://github.com/moonlight-stream/moonlight-qt) and [iOS/tvOS client](https://github.com/moonlight-stream/moonlight-ios).
+This fork adds a custom `InputConnection` that intercepts those IME events and routes them to the remote host via the existing `NvConnection.sendUtf8Text()` protocol path.
 
-You can follow development on our [Discord server](https://moonlight-stream.org/discord) and help translate Moonlight into your language on [Weblate](https://hosted.weblate.org/projects/moonlight/moonlight-android/).
+| Input Method | Stock Artemis | Artemis Voice |
+|---|---|---|
+| Hardware keyboard | Works | Works |
+| Gboard tap typing | Works | Works |
+| Gboard voice dictation | **Broken** | **Fixed** |
+| Gboard swipe typing | **Broken** | **Fixed** |
+| Autocomplete suggestions | **Broken** | **Fixed** |
 
 ## Downloads
-* [Google Play Store](https://play.google.com/store/apps/details?id=com.limelight)
-* [Amazon App Store](https://www.amazon.com/gp/product/B00JK4MFN2)
-* [F-Droid](https://f-droid.org/packages/com.limelight)
-* [APK](https://github.com/moonlight-stream/moonlight-android/releases)
+
+* [APK (Debug)](https://github.com/AFK-Automations/artemis-voice/raw/master/builds/artemis-voice.apk) — installs alongside stock Moonlight and Artemis
+
+## Changes from Upstream
+
+Only **3 files** changed (117 lines added):
+
+1. **`StreamInputConnection.java`** (new) — Custom `BaseInputConnection` that routes `commitText()` → `NvConnection.sendUtf8Text()`
+2. **`StreamView.java`** — Override `onCreateInputConnection()` to return `StreamInputConnection`
+3. **`Game.java`** — Pass `NvConnection` reference to `StreamView`
+
+Application ID changed to `com.mncompute.artemis.voice` so it installs alongside stock apps.
+
+Internal package names remain `com.limelight.*` to minimize diff and simplify upstream merges.
 
 ## Building
-* Install Android Studio and the Android NDK
-* Run ‘git submodule update --init --recursive’ from within moonlight-android/
-* In moonlight-android/, create a file called ‘local.properties’. Add an ‘ndk.dir=’ property to the local.properties file and set it equal to your NDK directory.
-* Build the APK using Android Studio or gradle
 
-## Authors
+```bash
+# Prerequisites: JDK 17, Android SDK (compileSdk 34), NDK 27
+git clone --recurse-submodules https://github.com/AFK-Automations/artemis-voice.git
+cd artemis-voice
+# Create local.properties with sdk.dir and ndk.dir paths
+./gradlew assembleNonRootDebug
+# Output: app/build/outputs/apk/nonRoot/debug/app-nonRoot-debug.apk
+```
 
-* [Cameron Gutman](https://github.com/cgutman)  
-* [Diego Waxemberg](https://github.com/dwaxemberg)  
-* [Aaron Neyer](https://github.com/Aaronneyer)  
-* [Andrew Hennessy](https://github.com/yetanothername)
+## Related
 
-Moonlight is the work of students at [Case Western](http://case.edu) and was
-started as a project at [MHacks](http://mhacks.org).
+* **[moonlight-voice](https://github.com/AFK-Automations/moonlight-voice)** — Same voice fix applied to stock [Moonlight Android](https://github.com/moonlight-stream/moonlight-android)
+* **Upstream issue:** [moonlight-stream/moonlight-android#1496](https://github.com/moonlight-stream/moonlight-android/issues/1496)
+* **Upstream PR:** [moonlight-stream/moonlight-android#1556](https://github.com/moonlight-stream/moonlight-android/pull/1556)
+
+## Credits
+
+* [Artemis Android](https://github.com/ClassicOldSong/moonlight-android) by ClassicOldSong
+* [Moonlight](https://github.com/moonlight-stream/moonlight-android) by Cameron Gutman et al.
+* Voice dictation fix by [Jon Gutierrez / MN Compute](https://github.com/AFK-Automations)
+
+## License
+
+GPL-3.0-or-later (same as upstream)
